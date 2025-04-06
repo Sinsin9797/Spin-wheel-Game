@@ -9,7 +9,7 @@ let spinning = false;
 const spinSound = new Audio("sounds/spin.mp3");
 const winSound = new Audio("sounds/win.mp3");
 
-// Load rewards
+// Load rewards from rewards.json
 fetch("rewards.json")
   .then(res => res.json())
   .then(data => {
@@ -20,6 +20,8 @@ fetch("rewards.json")
 function drawWheel() {
   const numSegments = segments.length;
   const arcSize = (2 * Math.PI) / numSegments;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   for (let i = 0; i < numSegments; i++) {
     const startAngle = i * arcSize;
@@ -45,4 +47,45 @@ function drawWheel() {
 }
 
 function spinWheel() {
-  if (
+  if (spinning) return;
+
+  spinning = true;
+  spinSound.play(); // Play spin sound
+
+  const spinAngle = Math.random() * 10 + 10;
+  const duration = 3000;
+  const start = performance.now();
+
+  function animate(time) {
+    const elapsed = time - start;
+    const progress = Math.min(elapsed / duration, 1);
+    angle += spinAngle * easeOutCubic(progress);
+
+    drawWheel();
+
+    if (progress < 1) {
+      requestAnimationFrame(animate);
+    } else {
+      showResult();
+      winSound.play(); // Play win sound
+      spinning = false;
+    }
+  }
+
+  requestAnimationFrame(animate);
+}
+
+function easeOutCubic(t) {
+  return 1 - Math.pow(1 - t, 3);
+}
+
+function showResult() {
+  const normalizedAngle = angle % (2 * Math.PI);
+  const segmentAngle = (2 * Math.PI) / segments.length;
+  const index = Math.floor(((2 * Math.PI - normalizedAngle + segmentAngle / 2) % (2 * Math.PI)) / segmentAngle);
+
+  const resultText = segments[index] || "Invalid Segment";
+  document.getElementById("result").innerText = "You won: " + resultText;
+}
+
+spinBtn.addEventListener("click", spinWheel);
