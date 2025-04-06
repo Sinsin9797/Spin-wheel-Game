@@ -1,11 +1,19 @@
 const canvas = document.getElementById("wheel");
 const ctx = canvas.getContext("2d");
-const segments = ["10", "20", "30", "50"];
-const colors = ["#FF5733", "#33FF57", "#3357FF", "#F1C40F"];
+const colors = ["#FF5733", "#33FF57", "#3357FF", "#F1C40F", "#8E44AD", "#1ABC9C"];
 const spinBtn = document.getElementById("spinBtn");
 
+let segments = [];
 let angle = 0;
 let spinning = false;
+
+// Load rewards from JSON
+fetch("rewards.json")
+  .then(res => res.json())
+  .then(data => {
+    segments = data.rewards;
+    drawWheel();
+  });
 
 function drawWheel() {
   const numSegments = segments.length;
@@ -15,20 +23,18 @@ function drawWheel() {
     const startAngle = i * arcSize;
     const endAngle = startAngle + arcSize;
 
-    // Draw color segment
     ctx.beginPath();
     ctx.moveTo(canvas.width / 2, canvas.height / 2);
     ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 2, startAngle, endAngle);
     ctx.closePath();
-    ctx.fillStyle = colors[i];
+    ctx.fillStyle = colors[i % colors.length];
     ctx.fill();
 
-    // Draw text
     const textAngle = startAngle + arcSize / 2;
     const x = canvas.width / 2 + Math.cos(textAngle) * 100;
     const y = canvas.height / 2 + Math.sin(textAngle) * 100;
     ctx.fillStyle = "#000";
-    ctx.font = "bold 20px sans-serif";
+    ctx.font = "bold 18px sans-serif";
     ctx.textAlign = "center";
     ctx.fillText(segments[i], x, y);
   }
@@ -77,5 +83,4 @@ function easeOutCubic(t) {
   return (--t) * t * t + 1;
 }
 
-drawWheel();
 spinBtn.addEventListener("click", spinWheel);
