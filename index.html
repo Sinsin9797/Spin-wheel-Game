@@ -1,15 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Spin Wheel Game</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Spin Wheel</title>
+  <style>
+    canvas { border: 2px solid #000; display: block; margin: 20px auto; }
+    button { display: block; margin: 10px auto; padding: 10px 20px; }
+    #result { text-align: center; font-size: 18px; }
+  </style>
 </head>
 <body>
-    <h1>Spin the Wheel!</h1>
-    <canvas id="wheel" width="300" height="300"></canvas>
-    <button id="spinBtn">Spin</button>
-    <p id="result"></p>
+  <canvas id="wheel" width="300" height="300"></canvas>
+  <button id="spinBtn">SPIN</button>
+  <div id="result"></div>
 
-    <script src="main.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
