@@ -5,7 +5,7 @@ let segments = [];
 let angle = 0;
 let spinning = false;
 
-// Load rewards from JSON
+// Load rewards
 fetch("rewards.json")
   .then(res => res.json())
   .then(data => {
@@ -28,9 +28,10 @@ function drawWheel() {
     ctx.fillStyle = `hsl(${(i * 360) / numSegments}, 70%, 60%)`;
     ctx.fill();
 
+    // Text
     const textAngle = startAngle + arcSize / 2;
-    const x = canvas.width / 2 + Math.cos(textAngle) * 80;
-    const y = canvas.height / 2 + Math.sin(textAngle) * 80;
+    const x = canvas.width / 2 + Math.cos(textAngle) * 70;
+    const y = canvas.height / 2 + Math.sin(textAngle) * 70;
     ctx.fillStyle = "#000";
     ctx.font = "bold 14px sans-serif";
     ctx.textAlign = "center";
@@ -43,7 +44,7 @@ function spinWheel() {
   spinning = true;
 
   const spinTime = 4000;
-  const spins = 10 + Math.random() * 10;
+  const spins = 8 + Math.random() * 4;
   const targetAngle = (Math.PI * 2 * spins) + Math.random() * Math.PI * 2;
   const start = performance.now();
 
@@ -68,4 +69,22 @@ function spinWheel() {
     }
   }
 
-  requestAnimationFrame(
+  requestAnimationFrame(animate);
+}
+
+function showResult() {
+  const normalizedAngle = angle % (2 * Math.PI);
+  const segmentAngle = (2 * Math.PI) / segments.length;
+  const index = Math.floor(((2 * Math.PI - normalizedAngle + segmentAngle / 2) % (2 * Math.PI)) / segmentAngle);
+
+  const result = segments[index];
+  document.getElementById("result").innerText = result
+    ? `You won: ${result}`
+    : "Error: Invalid segment";
+}
+
+function easeOutCubic(t) {
+  return (--t) * t * t + 1;
+}
+
+spinBtn.addEventListener("click", spinWheel);
