@@ -4,8 +4,8 @@ function showResult() {
   const index = Math.floor(((2 * Math.PI - normalizedAngle + segmentAngle / 2) % (2 * Math.PI)) / segmentAngle);
 
   if (segments[index]) {
-    alert("You won: " + segments[index]);
+    document.getElementById("result").innerText = "You won: " + segments[index];
   } else {
-    alert("Error: Invalid segment index");
+    document.getElementById("result").innerText = "Error: Invalid segment";
   }
 }
