@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spin Wheel Game</title>
+  <style>
+    #wheel {
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      border: 10px solid #000;
+      text-align: center;
+      line-height: 300px;
+      font-size: 24px;
+      margin: 50px auto;
+      transition: transform 4s ease-out;
+    }
+    button {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div id="wheel">Spin Me!</div>
+  <button onclick="spin()">Spin</button>
+
+  <script>
+    function spin() {
+      const wheel = document.getElementById("wheel");
+      const deg = Math.floor(5000 + Math.random() * 5000);
+      wheel.style.transform = `rotate(${deg}deg)`;
+    }
+  </script>
+</body>
+</html>
