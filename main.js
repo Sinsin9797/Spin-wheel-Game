@@ -6,9 +6,8 @@ let segments = [];
 let angle = 0;
 let spinning = false;
 
-// Corrected sound paths
-const spinSound = new Audio("spin.mp3");
-const winSound = new Audio("win.mp3");
+const spinSound = new Audio("sounds/spin.mp3");
+const winSound = new Audio("sounds/win.mp3");
 
 // Load rewards from rewards.json
 fetch("rewards.json")
@@ -23,35 +22,40 @@ function drawWheel() {
   const arcSize = (2 * Math.PI) / numSegments;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.save(); 
+  ctx.translate(canvas.width / 2, canvas.height / 2);
+  ctx.rotate(angle); 
 
   for (let i = 0; i < numSegments; i++) {
     const startAngle = i * arcSize;
     const endAngle = startAngle + arcSize;
 
     ctx.beginPath();
-    ctx.moveTo(canvas.width / 2, canvas.height / 2);
-    ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 2, startAngle, endAngle);
+    ctx.moveTo(0, 0);
+    ctx.arc(0, 0, canvas.width / 2, startAngle, endAngle);
     ctx.closePath();
 
     ctx.fillStyle = `hsl(${i * 360 / numSegments}, 80%, 60%)`;
     ctx.fill();
 
     const textAngle = startAngle + arcSize / 2;
-    const x = canvas.width / 2 + Math.cos(textAngle) * 100;
-    const y = canvas.height / 2 + Math.sin(textAngle) * 100;
+    const x = Math.cos(textAngle) * 100;
+    const y = Math.sin(textAngle) * 100;
 
     ctx.fillStyle = "#000";
     ctx.font = "bold 14px sans-serif";
     ctx.textAlign = "center";
     ctx.fillText(segments[i], x, y);
   }
+
+  ctx.restore();
 }
 
 function spinWheel() {
   if (spinning) return;
 
   spinning = true;
-  spinSound.play(); // Play spin sound
+  spinSound.play();
 
   const spinAngle = Math.random() * 10 + 10;
   const duration = 3000;
@@ -68,7 +72,7 @@ function spinWheel() {
       requestAnimationFrame(animate);
     } else {
       showResult();
-      winSound.play(); // Play win sound
+      winSound.play();
       spinning = false;
     }
   }
