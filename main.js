@@ -1,22 +1,15 @@
-<canvas id="wheel" width="300" height="300"></canvas>
-<button id="spinBtn">Spin</button>
-<div id="result"></div>
-
-<script>
 const canvas = document.getElementById("wheel");
 const ctx = canvas.getContext("2d");
 const spinBtn = document.getElementById("spinBtn");
+const resultEl = document.getElementById("result");
 
 let segments = [];
 let angle = 0;
-let targetAngle = 0;
 let spinning = false;
 
-// Load sounds
-const spinSound = new Audio("spin.mp3");
-const winSound = new Audio("win.mp3");
+const spinSound = new Audio("sounds/spin.mp3");
+const winSound = new Audio("sounds/win.mp3");
 
-// Load rewards
 fetch("rewards.json")
   .then(res => res.json())
   .then(data => {
@@ -60,29 +53,27 @@ function drawWheel() {
 
 function spinWheel() {
   if (spinning) return;
+
   spinning = true;
+  spinSound.play();
 
-  spinSound.play().catch(e => console.warn("Spin sound failed"));
-
-  const spinAngle = Math.random() * 6 + 6; // more realistic spin
+  const spinAngle = Math.random() * 10 + 10;
   const duration = 3000;
-  const startTime = performance.now();
-  const startAngle = angle;
+  const start = performance.now();
 
-  function animate(time) {
-    const elapsed = time - startTime;
+  function animate(now) {
+    const elapsed = now - start;
     const progress = Math.min(elapsed / duration, 1);
-    const easedProgress = easeOutCubic(progress);
+    angle = spinAngle * easeOutCubic(progress);
 
-    angle = startAngle + spinAngle * 2 * Math.PI * easedProgress;
     drawWheel();
 
     if (progress < 1) {
       requestAnimationFrame(animate);
     } else {
       spinning = false;
-      winSound.play().catch(e => console.warn("Win sound failed"));
       showResult();
+      winSound.play();
     }
   }
 
@@ -98,9 +89,8 @@ function showResult() {
   const segmentAngle = (2 * Math.PI) / segments.length;
   const index = Math.floor(((2 * Math.PI - normalizedAngle + segmentAngle / 2) % (2 * Math.PI)) / segmentAngle);
 
-  const result = segments[index];
-  document.getElementById("result").innerText = "You won: " + result;
+  const resultText = segments[index] || "Invalid Segment";
+  resultEl.innerText = "You won: " + resultText;
 }
 
 spinBtn.addEventListener("click", spinWheel);
-</script>
