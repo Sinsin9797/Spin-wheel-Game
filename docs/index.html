@@ -1,39 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Spin Wheel Game</title>
   <style>
+    body {
+      text-align: center;
+      background-color: #f0f0f0;
+      font-family: Arial;
+      margin-top: 100px;
+    }
+
     #wheel {
       width: 300px;
       height: 300px;
       border-radius: 50%;
-      border: 10px solid #000;
-      text-align: center;
-      line-height: 300px;
-      font-size: 24px;
-      margin: 50px auto;
+      border: 10px solid #333;
+      margin: 0 auto;
+      background: conic-gradient(
+        #ff9999 0% 25%, 
+        #99ccff 25% 50%, 
+        #99ff99 50% 75%, 
+        #ffff99 75% 100%
+      );
       transition: transform 4s ease-out;
     }
-    button {
-      display: block;
-      margin: 20px auto;
+
+    #spin {
+      margin-top: 20px;
       padding: 10px 20px;
-      font-size: 18px;
+      font-size: 20px;
+      background-color: #333;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <div id="wheel">Spin Me!</div>
-  <button onclick="spin()">Spin</button>
+
+  <div id="wheel"></div>
+  <button id="spin">SPIN</button>
 
   <script>
-    function spin() {
-      const wheel = document.getElementById("wheel");
-      const deg = Math.floor(5000 + Math.random() * 5000);
-      wheel.style.transform = `rotate(${deg}deg)`;
-    }
+    const wheel = document.getElementById("wheel");
+    const spinBtn = document.getElementById("spin");
+
+    spinBtn.addEventListener("click", () => {
+      const randomDeg = Math.floor(3600 + Math.random() * 360); // random large angle
+      wheel.style.transform = `rotate(${randomDeg}deg)`;
+    });
   </script>
 </body>
 </html>
