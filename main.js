@@ -6,8 +6,9 @@ let segments = [];
 let angle = 0;
 let spinning = false;
 
-const spinSound = new Audio("sounds/spin.mp3");
-const winSound = new Audio("sounds/win.mp3");
+// Corrected sound paths
+const spinSound = new Audio("spin.mp3");
+const winSound = new Audio("win.mp3");
 
 // Load rewards from rewards.json
 fetch("rewards.json")
