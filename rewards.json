@@ -1,3 +1,10 @@
 {
-  "rewards": ["10 Coins", "20 Coins", "Try Again", "100 Coins", "Better Luck", "Jackpot"]
+  "rewards": [
+    "10 Coins",
+    "20 Coins",
+    "Try Again",
+    "100 Coins",
+    "Better Luck",
+    "Jackpot"
+  ]
 }
