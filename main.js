@@ -1,3 +1,8 @@
+<canvas id="wheel" width="300" height="300"></canvas>
+<button id="spinBtn">Spin</button>
+<div id="result"></div>
+
+<script>
 const canvas = document.getElementById("wheel");
 const ctx = canvas.getContext("2d");
 const spinBtn = document.getElementById("spinBtn");
@@ -6,8 +11,11 @@ let segments = [];
 let angle = 0;
 let spinning = false;
 
-const spinSound = new Audio("sounds/spin.mp3");
-const winSound = new Audio("sounds/win.mp3");
+// Sound files - path changed to root folder
+const spinSound = new Audio("spin.mp3");
+const winSound = new Audio("win.mp3");
+spinSound.volume = 0.5;
+winSound.volume = 0.7;
 
 // Load rewards from rewards.json
 fetch("rewards.json")
@@ -55,7 +63,9 @@ function spinWheel() {
   if (spinning) return;
 
   spinning = true;
-  spinSound.play();
+
+  // Play spin sound on user interaction
+  spinSound.play().catch(e => console.log("Spin sound blocked: ", e));
 
   const spinAngle = Math.random() * 10 + 10;
   const duration = 3000;
@@ -72,7 +82,7 @@ function spinWheel() {
       requestAnimationFrame(animate);
     } else {
       showResult();
-      winSound.play();
+      winSound.play().catch(e => console.log("Win sound blocked: ", e));
       spinning = false;
     }
   }
@@ -94,3 +104,4 @@ function showResult() {
 }
 
 spinBtn.addEventListener("click", spinWheel);
+</script>
