@@ -9,6 +9,12 @@ let spinning = false;
 const spinSound = new Audio("sounds/spin.mp3");
 const winSound = new Audio("sounds/win.mp3");
 
+// Preload sounds
+spinSound.preload = 'auto';
+spinSound.load();
+winSound.preload = 'auto';
+winSound.load();
+
 // Load rewards from rewards.json
 fetch("rewards.json")
   .then(res => res.json())
@@ -54,13 +60,13 @@ function drawWheel() {
 function spinWheel() {
   if (spinning) return;
 
-  console.log("Trying to play spin sound...");
-  spinSound.currentTime = 0;
-  spinSound.play().then(() => {
-    console.log("Spin sound playing...");
-  }).catch(err => {
-    console.error("Spin sound error:", err);
-  });
+  // Play sound only after user interaction (safe autoplay)
+  try {
+    spinSound.currentTime = 0;
+    spinSound.play();
+  } catch (err) {
+    console.log("Spin sound blocked or failed:", err);
+  }
 
   spinning = true;
   const spinAngle = Math.random() * 10 + 10;
