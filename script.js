@@ -54,8 +54,13 @@ function drawWheel() {
 function spinWheel() {
   if (spinning) return;
 
+  console.log("Trying to play spin sound...");
   spinSound.currentTime = 0;
-  spinSound.play();
+  spinSound.play().then(() => {
+    console.log("Spin sound playing...");
+  }).catch(err => {
+    console.error("Spin sound error:", err);
+  });
 
   spinning = true;
   const spinAngle = Math.random() * 10 + 10;
