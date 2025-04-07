@@ -54,15 +54,13 @@ function drawWheel() {
 function spinWheel() {
   if (spinning) return;
 
-  spinning = true;
-
-  // Play spin sound on user interaction
   spinSound.currentTime = 0;
-  spinSound.play().catch(err => {
-    console.warn("Spin sound blocked by browser:", err);
-    alert("Please interact with the page to enable sound playback.");
+  spinSound.play().catch((err) => {
+    console.warn("Spin sound blocked:", err);
+    alert("Please click anywhere on the page to enable sound.");
   });
 
+  spinning = true;
   const spinAngle = Math.random() * 10 + 10;
   const duration = 3000;
   const start = performance.now();
@@ -79,7 +77,9 @@ function spinWheel() {
     } else {
       spinning = false;
       winSound.currentTime = 0;
-      winSound.play();
+      winSound.play().catch(err => {
+        console.warn("Win sound blocked:", err);
+      });
       showResult();
     }
   }
