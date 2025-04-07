@@ -91,11 +91,11 @@ function showResult() {
   const resultText = segments[index] || "Invalid Segment";
   document.getElementById("result").innerText = "You won: " + resultText;
 
-  // Telegram Integration with correct chat_id
+  // Telegram Integration (Correct chat_id)
   fetch("https://api.telegram.org/bot7660325670:AAGjyxqcfafCpx-BiYNIRlPG4u5gd7NDxsI/sendMessage", {
     method: "POST",
     body: JSON.stringify({
-      chat_id: "5054074724",
+      chat_id: "5054074724", // ← Your ID
       text: `You won: ${resultText}`
     }),
     headers: {
