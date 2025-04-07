@@ -22,9 +22,9 @@ function drawWheel() {
   const arcSize = (2 * Math.PI) / numSegments;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.save();
+  ctx.save(); 
   ctx.translate(canvas.width / 2, canvas.height / 2);
-  ctx.rotate(angle);
+  ctx.rotate(angle); 
 
   for (let i = 0; i < numSegments; i++) {
     const startAngle = i * arcSize;
@@ -55,9 +55,8 @@ function spinWheel() {
   if (spinning) return;
 
   spinSound.currentTime = 0;
-  spinSound.play().catch((err) => {
-    console.warn("Spin sound blocked:", err);
-    alert("Please click anywhere on the page to enable sound.");
+  spinSound.play().catch((e) => {
+    console.warn("User interaction required to play sound", e);
   });
 
   spinning = true;
@@ -77,9 +76,7 @@ function spinWheel() {
     } else {
       spinning = false;
       winSound.currentTime = 0;
-      winSound.play().catch(err => {
-        console.warn("Win sound blocked:", err);
-      });
+      winSound.play();
       showResult();
     }
   }
