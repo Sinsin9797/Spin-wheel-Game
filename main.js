@@ -48,11 +48,9 @@ function drawWheel() {
   ctx.restore();
 }
 
-// Step 3: Add updated spin logic with sound
 function spinWheel() {
   spinning = true;
 
-  // Spin sound immediately on click
   const spinSound = new Audio("sounds/spin.mp3");
   spinSound.play().catch(e => console.log("Spin sound error:", e));
 
@@ -72,8 +70,6 @@ function spinWheel() {
       requestAnimationFrame(animate);
     } else {
       spinning = false;
-
-      // Win sound at end
       const winSound = new Audio("sounds/win.mp3");
       winSound.play();
       showResult();
@@ -94,11 +90,23 @@ function showResult() {
 
   const resultText = segments[index] || "Invalid Segment";
   document.getElementById("result").innerText = "You won: " + resultText;
+
+  // Telegram Integration
+  fetch("https://api.telegram.org/bot7660325670:AAGjyxqcfafCpx-BiYNIRlPG4u5gd7NDxsI/sendMessage", {
+    method: "POST",
+    body: JSON.stringify({
+      chat_id: "6041802394",
+      text: `You won: ${resultText}`
+    }),
+    headers: {
+      "Content-Type": "application/json"
+    }
+  }).catch(err => console.error("Telegram error:", err));
 }
 
-// Step 4: Call spinWheel on click
+// Button Listener
 spinBtn.addEventListener("click", () => {
   if (!spinning) {
-    spinWheel(); // spin sound already called inside
+    spinWheel();
   }
 });
