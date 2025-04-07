@@ -94,14 +94,17 @@ function showResult() {
   // Telegram Integration (Correct chat_id)
   fetch("https://api.telegram.org/bot7660325670:AAGjyxqcfafCpx-BiYNIRlPG4u5gd7NDxsI/sendMessage", {
     method: "POST",
-    body: JSON.stringify({
-      chat_id: "5054074724", // ← Your ID
-      text: `You won: ${resultText}`
-    }),
     headers: {
       "Content-Type": "application/json"
-    }
-  }).catch(err => console.error("Telegram error:", err));
+    },
+    body: JSON.stringify({
+      chat_id: "5054074724",
+      text: `You won: ${resultText}`
+    })
+  })
+  .then(response => response.json())
+  .then(data => console.log("Telegram response:", data))
+  .catch(err => console.error("Telegram error:", err));
 }
 
 // Spin button click
