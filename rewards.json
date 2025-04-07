@@ -1,10 +1,10 @@
 {
   "rewards": [
-    "Coin",
-    "Retry",
-    "Bonus",
-    "Spin Again",
-    "Win",
-    "Try Again"
+    { "label": "Gold Coin", "icon": "icons/gold.png" },
+    { "label": "Silver Coin", "icon": "icons/silver.png" },
+    { "label": "Bronze Coin", "icon": "icons/bronze.png" },
+    { "label": "Gift", "icon": "icons/gift.png" },
+    { "label": "Bonus", "icon": "icons/bonus.png" },
+    { "label": "Try Again", "icon": "icons/tryagain.png" }
   ]
 }
