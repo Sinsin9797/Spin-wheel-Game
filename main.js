@@ -73,7 +73,9 @@ function spinWheel() {
       spinning = false;
       const winSound = new Audio("sounds/win.mp3");
       winSound.play();
-      showResult();
+
+      // Delay message until win sound ends (~1s)
+      setTimeout(showResult, 1000);
     }
   }
 
@@ -92,9 +94,7 @@ function showResult() {
   const resultText = segments[index] || "Invalid Segment";
   document.getElementById("result").innerText = "You won: " + resultText;
 
-  console.log("Sending Telegram alert:", resultText);
-
-  // Telegram Integration
+  // Send to Telegram
   fetch("https://api.telegram.org/bot7660325670:AAGjyxqcfafCpx-BiYNIRlPG4u5gd7NDxsI/sendMessage", {
     method: "POST",
     headers: {
@@ -102,19 +102,15 @@ function showResult() {
     },
     body: JSON.stringify({
       chat_id: 5054074724,
-      text: `Spin Wheel Winner: ${resultText}`
+      text: `Spin Result: ${resultText}`
     })
   })
   .then(res => res.json())
   .then(data => {
-    console.log("Telegram API response:", data);
-    if (!data.ok) {
-      alert("Telegram failed: " + data.description);
-    }
+    console.log("Telegram Message Sent:", data);
   })
   .catch(err => {
-    console.error("Telegram fetch error:", err);
-    alert("Telegram send failed: " + err.message);
+    console.error("Telegram Error:", err);
   });
 }
 
