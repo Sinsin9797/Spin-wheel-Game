@@ -9,12 +9,6 @@ let spinning = false;
 const spinSound = new Audio("sounds/spin.mp3");
 const winSound = new Audio("sounds/win.mp3");
 
-// Preload sounds
-spinSound.preload = 'auto';
-spinSound.load();
-winSound.preload = 'auto';
-winSound.load();
-
 // Load rewards from rewards.json
 fetch("rewards.json")
   .then(res => res.json())
@@ -28,9 +22,9 @@ function drawWheel() {
   const arcSize = (2 * Math.PI) / numSegments;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.save(); 
+  ctx.save();
   ctx.translate(canvas.width / 2, canvas.height / 2);
-  ctx.rotate(angle); 
+  ctx.rotate(angle);
 
   for (let i = 0; i < numSegments; i++) {
     const startAngle = i * arcSize;
@@ -60,15 +54,15 @@ function drawWheel() {
 function spinWheel() {
   if (spinning) return;
 
-  // Play sound only after user interaction (safe autoplay)
-  try {
-    spinSound.currentTime = 0;
-    spinSound.play();
-  } catch (err) {
-    console.log("Spin sound blocked or failed:", err);
-  }
-
   spinning = true;
+
+  // Play spin sound on user interaction
+  spinSound.currentTime = 0;
+  spinSound.play().catch(err => {
+    console.warn("Spin sound blocked by browser:", err);
+    alert("Please interact with the page to enable sound playback.");
+  });
+
   const spinAngle = Math.random() * 10 + 10;
   const duration = 3000;
   const start = performance.now();
