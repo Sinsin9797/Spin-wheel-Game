@@ -12,7 +12,8 @@ fetch("rewards.json")
   .then(data => {
     segments = data.rewards;
     drawWheel();
-  });
+  })
+  .catch(err => console.error("Rewards load error:", err));
 
 function drawWheel() {
   const numSegments = segments.length;
@@ -91,7 +92,9 @@ function showResult() {
   const resultText = segments[index] || "Invalid Segment";
   document.getElementById("result").innerText = "You won: " + resultText;
 
-  // Telegram Integration (Correct chat_id)
+  console.log("Sending Telegram alert:", resultText);
+
+  // Telegram Integration
   fetch("https://api.telegram.org/bot7660325670:AAGjyxqcfafCpx-BiYNIRlPG4u5gd7NDxsI/sendMessage", {
     method: "POST",
     headers: {
@@ -99,12 +102,20 @@ function showResult() {
     },
     body: JSON.stringify({
       chat_id: "5054074724",
-      text: `You won: ${resultText}`
+      text: `Spin Wheel Winner: ${resultText}`
     })
   })
-  .then(response => response.json())
-  .then(data => console.log("Telegram response:", data))
-  .catch(err => console.error("Telegram error:", err));
+  .then(res => res.json())
+  .then(data => {
+    console.log("Telegram API response:", data);
+    if (!data.ok) {
+      alert("Telegram alert failed: " + data.description);
+    }
+  })
+  .catch(err => {
+    console.error("Telegram fetch error:", err);
+    alert("Error sending Telegram message");
+  });
 }
 
 // Spin button click
