@@ -1,15 +1,18 @@
 const canvas = document.getElementById("wheel");
 const ctx = canvas.getContext("2d");
 const spinBtn = document.getElementById("spinBtn");
+const muteBtn = document.getElementById("muteBtn");
+const darkToggle = document.getElementById("darkModeToggle");
 
 let segments = [];
 let angle = 0;
 let spinning = false;
+let muted = false;
 
 const spinSound = new Audio("sounds/spin.mp3");
 const winSound = new Audio("sounds/win.mp3");
 
-// Load rewards
+// Load rewards with icons
 fetch("rewards.json")
   .then(res => res.json())
   .then(data => {
@@ -38,14 +41,19 @@ function drawWheel() {
     ctx.fillStyle = `hsl(${i * 360 / numSegments}, 80%, 60%)`;
     ctx.fill();
 
-    const textAngle = startAngle + arcSize / 2;
-    const x = Math.cos(textAngle) * 100;
-    const y = Math.sin(textAngle) * 100;
+    // Add Icon
+    const icon = new Image();
+    icon.src = segments[i].icon;
+    const iconAngle = startAngle + arcSize / 2;
+    const x = Math.cos(iconAngle) * 130 - 15;
+    const y = Math.sin(iconAngle) * 130 - 15;
+    icon.onload = () => ctx.drawImage(icon, x, y, 30, 30);
 
+    // Add text
     ctx.fillStyle = "#000";
     ctx.font = "bold 14px sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText(segments[i], x, y);
+    ctx.fillText(segments[i].label, Math.cos(iconAngle) * 90, Math.sin(iconAngle) * 90);
   }
 
   ctx.restore();
@@ -53,6 +61,11 @@ function drawWheel() {
 
 function spinWheel() {
   if (spinning) return;
+
+  if (!muted) {
+    spinSound.currentTime = 0;
+    spinSound.play();
+  }
 
   spinning = true;
   const spinAngle = Math.random() * 10 + 10;
@@ -63,23 +76,23 @@ function spinWheel() {
     const elapsed = now - start;
     const progress = Math.min(elapsed / duration, 1);
     angle = spinAngle * easeOutCubic(progress);
+
     drawWheel();
 
     if (progress < 1) {
       requestAnimationFrame(animate);
     } else {
       spinning = false;
-      winSound.currentTime = 0;
-      winSound.play();
+      if (!muted) {
+        winSound.currentTime = 0;
+        winSound.play();
+      }
       showResult();
+      triggerConfetti();
     }
   }
 
   requestAnimationFrame(animate);
-}
-
-function easeOutCubic(t) {
-  return 1 - Math.pow(1 - t, 3);
 }
 
 function showResult() {
@@ -87,17 +100,59 @@ function showResult() {
   const segmentAngle = (2 * Math.PI) / segments.length;
   const index = Math.floor(((2 * Math.PI - normalizedAngle + segmentAngle / 2) % (2 * Math.PI)) / segmentAngle);
 
-  const resultText = segments[index] || "Invalid Segment";
-  document.getElementById("result").innerText = "You won: " + resultText;
+  const result = segments[index];
+  document.getElementById("result").innerText = `You won: ${result.label}`;
+
+  // Google Sheets logging
+  fetch("YOUR_GOOGLE_SHEET_WEBHOOK", {
+    method: "POST",
+    body: JSON.stringify({ reward: result.label, time: new Date().toLocaleString() }),
+    headers: { "Content-Type": "application/json" }
+  });
+
+  // Telegram alert
+  fetch("YOUR_TELEGRAM_BOT_WEBHOOK", {
+    method: "POST",
+    body: JSON.stringify({ text: `You won: ${result.label}` }),
+    headers: { "Content-Type": "application/json" }
+  });
 }
 
-// ✅ This is the key fix
-spinBtn.addEventListener("click", () => {
-  spinSound.currentTime = 0;
-  spinSound.play().then(() => {
-    spinWheel();
-  }).catch((e) => {
-    console.warn("Autoplay blocked. Proceeding with spin anyway.", e);
-    spinWheel(); // fallback
-  });
+function easeOutCubic(t) {
+  return 1 - Math.pow(1 - t, 3);
+}
+
+function triggerConfetti() {
+  const duration = 1 * 1000;
+  const end = Date.now() + duration;
+
+  (function frame() {
+    confetti({
+      particleCount: 5,
+      angle: 60,
+      spread: 55,
+      origin: { x: 0 },
+    });
+    confetti({
+      particleCount: 5,
+      angle: 120,
+      spread: 55,
+      origin: { x: 1 },
+    });
+
+    if (Date.now() < end) {
+      requestAnimationFrame(frame);
+    }
+  })();
+}
+
+muteBtn.addEventListener("click", () => {
+  muted = !muted;
+  muteBtn.innerText = muted ? "Unmute" : "Mute";
 });
+
+darkToggle.addEventListener("click", () => {
+  document.body.classList.toggle("dark-mode");
+});
+
+spinBtn.addEventListener("click", spinWheel);
