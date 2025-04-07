@@ -1,15 +1,12 @@
 const canvas = document.getElementById("wheel");
 const ctx = canvas.getContext("2d");
 const spinBtn = document.getElementById("spinBtn");
-const resultEl = document.getElementById("result");
 
 let segments = [];
 let angle = 0;
 let spinning = false;
 
-const spinSound = new Audio("sounds/spin.mp3");
-const winSound = new Audio("sounds/win.mp3");
-
+// Load rewards from rewards.json
 fetch("rewards.json")
   .then(res => res.json())
   .then(data => {
@@ -51,20 +48,23 @@ function drawWheel() {
   ctx.restore();
 }
 
+// Step 3: Add updated spin logic with sound
 function spinWheel() {
-  if (spinning) return;
-
   spinning = true;
-  spinSound.play();
+
+  // Spin sound immediately on click
+  const spinSound = new Audio("sounds/spin.mp3");
+  spinSound.play().catch(e => console.log("Spin sound error:", e));
 
   const spinAngle = Math.random() * 10 + 10;
   const duration = 3000;
   const start = performance.now();
+  const startAngle = angle;
 
   function animate(now) {
     const elapsed = now - start;
     const progress = Math.min(elapsed / duration, 1);
-    angle = spinAngle * easeOutCubic(progress);
+    angle = startAngle + spinAngle * easeOutCubic(progress);
 
     drawWheel();
 
@@ -72,8 +72,11 @@ function spinWheel() {
       requestAnimationFrame(animate);
     } else {
       spinning = false;
-      showResult();
+
+      // Win sound at end
+      const winSound = new Audio("sounds/win.mp3");
       winSound.play();
+      showResult();
     }
   }
 
@@ -90,7 +93,12 @@ function showResult() {
   const index = Math.floor(((2 * Math.PI - normalizedAngle + segmentAngle / 2) % (2 * Math.PI)) / segmentAngle);
 
   const resultText = segments[index] || "Invalid Segment";
-  resultEl.innerText = "You won: " + resultText;
+  document.getElementById("result").innerText = "You won: " + resultText;
 }
 
-spinBtn.addEventListener("click", spinWheel);
+// Step 4: Call spinWheel on click
+spinBtn.addEventListener("click", () => {
+  if (!spinning) {
+    spinWheel(); // spin sound already called inside
+  }
+});
