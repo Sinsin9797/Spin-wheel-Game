@@ -50,8 +50,9 @@ function drawWheel() {
 }
 
 function spinWheel() {
-  spinning = true;
+  if (spinning) return;
 
+  spinning = true;
   const spinSound = new Audio("sounds/spin.mp3");
   spinSound.play().catch(e => console.log("Spin sound error:", e));
 
@@ -73,9 +74,7 @@ function spinWheel() {
       spinning = false;
       const winSound = new Audio("sounds/win.mp3");
       winSound.play();
-
-      // Delay message until win sound ends (~1s)
-      setTimeout(showResult, 1000);
+      showResult();
     }
   }
 
@@ -94,28 +93,31 @@ function showResult() {
   const resultText = segments[index] || "Invalid Segment";
   document.getElementById("result").innerText = "You won: " + resultText;
 
-  // Send to Telegram
-  fetch("https://api.telegram.org/bot7660325670:AAGjyxqcfafCpx-BiYNIRlPG4u5gd7NDxsI/sendMessage", {
+  // Telegram Integration (works without Google Sheets)
+  const BOT_TOKEN = "7660325670:AAGjyxqcfafCpx-BiYNIRlPG4u5gd7NDxsI";
+  const CHAT_ID = 5054074724;
+
+  fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      chat_id: 5054074724,
-      text: `Spin Result: ${resultText}`
+      chat_id: CHAT_ID,
+      text: `Spin Wheel Winner: ${resultText}`
     })
   })
   .then(res => res.json())
   .then(data => {
-    console.log("Telegram Message Sent:", data);
+    console.log("Telegram response:", data);
+    if (!data.ok) {
+      alert("Telegram Error: " + data.description);
+    }
   })
   .catch(err => {
-    console.error("Telegram Error:", err);
+    console.error("Telegram send error:", err);
+    alert("Telegram failed: " + err.message);
   });
 }
 
-spinBtn.addEventListener("click", () => {
-  if (!spinning) {
-    spinWheel();
-  }
-});
+spinBtn.addEventListener("click", spinWheel);
