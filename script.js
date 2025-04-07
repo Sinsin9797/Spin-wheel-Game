@@ -54,11 +54,6 @@ function drawWheel() {
 function spinWheel() {
   if (spinning) return;
 
-  spinSound.currentTime = 0;
-  spinSound.play().catch((e) => {
-    console.warn("User interaction required to play sound", e);
-  });
-
   spinning = true;
   const spinAngle = Math.random() * 10 + 10;
   const duration = 3000;
@@ -97,4 +92,12 @@ function showResult() {
   document.getElementById("result").innerText = "You won: " + resultText;
 }
 
-spinBtn.addEventListener("click", spinWheel);
+// ✅ Sound should be triggered from direct user interaction (button click)
+spinBtn.addEventListener("click", () => {
+  spinSound.currentTime = 0;
+  spinSound.play().catch((e) => {
+    console.warn("Autoplay blocked:", e);
+  });
+
+  spinWheel();
+});
