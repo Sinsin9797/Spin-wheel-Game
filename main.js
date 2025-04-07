@@ -1,16 +1,12 @@
 const canvas = document.getElementById("wheel");
 const ctx = canvas.getContext("2d");
 const spinBtn = document.getElementById("spinBtn");
-const muteBtn = document.getElementById("muteBtn");
-const darkModeBtn = document.getElementById("darkModeBtn");
 
 let segments = [];
 let angle = 0;
 let spinning = false;
-let muted = false;
-let darkMode = false;
 
-// Load rewards
+// Load rewards from rewards.json
 fetch("rewards.json")
   .then(res => res.json())
   .then(data => {
@@ -57,7 +53,7 @@ function spinWheel() {
   spinning = true;
 
   const spinSound = new Audio("sounds/spin.mp3");
-  if (!muted) spinSound.play().catch(e => console.log("Spin sound error:", e));
+  spinSound.play().catch(e => console.log("Spin sound error:", e));
 
   const spinAngle = Math.random() * 10 + 10;
   const duration = 3000;
@@ -76,7 +72,7 @@ function spinWheel() {
     } else {
       spinning = false;
       const winSound = new Audio("sounds/win.mp3");
-      if (!muted) winSound.play();
+      winSound.play();
       showResult();
     }
   }
@@ -96,14 +92,7 @@ function showResult() {
   const resultText = segments[index] || "Invalid Segment";
   document.getElementById("result").innerText = "You won: " + resultText;
 
-  // Confetti effect
-  if (!muted && window.confetti) {
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
-  }
+  console.log("Sending Telegram alert:", resultText);
 
   // Telegram Integration
   fetch("https://api.telegram.org/bot7660325670:AAGjyxqcfafCpx-BiYNIRlPG4u5gd7NDxsI/sendMessage", {
@@ -112,7 +101,7 @@ function showResult() {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      chat_id: "5054074724",
+      chat_id: 5054074724,
       text: `Spin Wheel Winner: ${resultText}`
     })
   })
@@ -120,31 +109,17 @@ function showResult() {
   .then(data => {
     console.log("Telegram API response:", data);
     if (!data.ok) {
-      alert("Telegram alert failed: " + data.description);
+      alert("Telegram failed: " + data.description);
     }
   })
   .catch(err => {
     console.error("Telegram fetch error:", err);
-    alert("Error sending Telegram message");
+    alert("Telegram send failed: " + err.message);
   });
 }
 
-// Spin
 spinBtn.addEventListener("click", () => {
   if (!spinning) {
     spinWheel();
   }
-});
-
-// Mute
-muteBtn.addEventListener("click", () => {
-  muted = !muted;
-  muteBtn.innerText = muted ? "Unmute" : "Mute";
-});
-
-// Dark Mode
-darkModeBtn.addEventListener("click", () => {
-  darkMode = !darkMode;
-  document.body.style.background = darkMode ? "#111" : "#fff";
-  document.body.style.color = darkMode ? "#fff" : "#000";
 });
