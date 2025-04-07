@@ -9,7 +9,7 @@ let spinning = false;
 const spinSound = new Audio("sounds/spin.mp3");
 const winSound = new Audio("sounds/win.mp3");
 
-// Load rewards from rewards.json
+// Load rewards
 fetch("rewards.json")
   .then(res => res.json())
   .then(data => {
@@ -22,9 +22,9 @@ function drawWheel() {
   const arcSize = (2 * Math.PI) / numSegments;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.save(); 
+  ctx.save();
   ctx.translate(canvas.width / 2, canvas.height / 2);
-  ctx.rotate(angle); 
+  ctx.rotate(angle);
 
   for (let i = 0; i < numSegments; i++) {
     const startAngle = i * arcSize;
@@ -63,7 +63,6 @@ function spinWheel() {
     const elapsed = now - start;
     const progress = Math.min(elapsed / duration, 1);
     angle = spinAngle * easeOutCubic(progress);
-
     drawWheel();
 
     if (progress < 1) {
@@ -92,12 +91,13 @@ function showResult() {
   document.getElementById("result").innerText = "You won: " + resultText;
 }
 
-// ✅ Sound should be triggered from direct user interaction (button click)
+// ✅ This is the key fix
 spinBtn.addEventListener("click", () => {
   spinSound.currentTime = 0;
-  spinSound.play().catch((e) => {
-    console.warn("Autoplay blocked:", e);
+  spinSound.play().then(() => {
+    spinWheel();
+  }).catch((e) => {
+    console.warn("Autoplay blocked. Proceeding with spin anyway.", e);
+    spinWheel(); // fallback
   });
-
-  spinWheel();
 });
