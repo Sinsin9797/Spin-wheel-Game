@@ -1,19 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Spin Wheel</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Spin Wheel Game</title>
   <style>
-    canvas { border: 2px solid #000; display: block; margin: 20px auto; }
-    button { display: block; margin: 10px auto; padding: 10px 20px; }
-    #result { text-align: center; font-size: 18px; }
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    canvas {
+      border: 4px solid #000;
+      border-radius: 50%;
+      margin-top: 20px;
+    }
+    #controls {
+      margin-top: 20px;
+    }
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .dark-mode {
+      background-color: #111;
+      color: #fff;
+    }
+    .dark-mode canvas {
+      border-color: #fff;
+    }
   </style>
 </head>
 <body>
-  <canvas id="wheel" width="300" height="300"></canvas>
-  <button id="spinBtn">SPIN</button>
-  <div id="result"></div>
+  <h1>Spin & Win</h1>
 
+  <canvas id="wheel" width="300" height="300"></canvas>
+
+  <div id="controls">
+    <button id="spinBtn">SPIN</button>
+    <button id="muteBtn">Mute</button>
+    <button id="darkModeToggle">Toggle Dark Mode</button>
+  </div>
+
+  <h2 id="result"></h2>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
