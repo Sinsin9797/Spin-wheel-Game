@@ -91,11 +91,11 @@ function showResult() {
   const resultText = segments[index] || "Invalid Segment";
   document.getElementById("result").innerText = "You won: " + resultText;
 
-  // Telegram Integration
+  // Telegram Integration with correct chat_id
   fetch("https://api.telegram.org/bot7660325670:AAGjyxqcfafCpx-BiYNIRlPG4u5gd7NDxsI/sendMessage", {
     method: "POST",
     body: JSON.stringify({
-      chat_id: "6041802394",
+      chat_id: "5054074724",
       text: `You won: ${resultText}`
     }),
     headers: {
@@ -104,7 +104,7 @@ function showResult() {
   }).catch(err => console.error("Telegram error:", err));
 }
 
-// Button Listener
+// Spin button click
 spinBtn.addEventListener("click", () => {
   if (!spinning) {
     spinWheel();
