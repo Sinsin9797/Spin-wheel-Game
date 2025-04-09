@@ -109,14 +109,25 @@
       z-index: 1000;
       font-weight: bold;
       box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.3);
-      display: none;
+    }
+
+    #telegramBanner a,
+    #customAd a {
+      color: inherit;
+      text-decoration: none;
+      display: block;
     }
   </style>
 </head>
 
 <body>
 
-  <div id="telegramBanner">Join our Telegram for more rewards!</div>
+  <!-- Telegram Join Banner with Link -->
+  <div id="telegramBanner">
+    <a href="https://t.me/WinTeam11" target="_blank">
+      Join our Telegram for more rewards!
+    </a>
+  </div>
 
   <h1>Spin & Win</h1>
 
@@ -134,8 +145,12 @@
 
   <h2 id="result"></h2>
 
-  <!-- Bottom Ad -->
-  <div id="customAd">Don't miss today's bonus! Join Telegram now!</div>
+  <!-- Bottom Ad with Link -->
+  <div id="customAd">
+    <a href="https://t.me/WinTeam11" target="_blank">
+      Don't miss today's bonus! Join Telegram now!
+    </a>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
   <script src="script.js"></script>
