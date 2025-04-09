@@ -4,56 +4,31 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Spin & Win Game</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 </head>
 <body>
-
   <div class="container">
     <h1>Spin & Win</h1>
-
-    <!-- User Input -->
     <input type="text" id="nameInput" placeholder="Enter your name" />
-
-    <!-- Wheel Display -->
-    <div id="wheel" class="wheel"></div>
-
-    <!-- Spin Button -->
-    <button id="spinBtn">Spin Now</button>
-
-    <!-- Result Display -->
+    <div id="coinDisplay">Coins: 0</div>
+    <button id="spinBtn">Spin</button>
     <div id="resultDisplay"></div>
-
-    <!-- Controls -->
+    <div id="wheel" class="wheel"></div>
     <div class="controls">
       <button id="muteBtn">Mute</button>
       <button id="darkBtn">Dark Mode</button>
     </div>
-
-    <!-- Coins & Referral -->
-    <div class="info">
-      <p id="coinDisplay">Coins: 0</p>
-      <p>Referral Link:</p>
+    <div class="referral">
+      <label>Referral Link:</label>
       <input type="text" id="referralLink" readonly />
     </div>
-
-    <!-- Telegram Message -->
+    <div id="leaderboard" class="leaderboard">Leaderboard loading...</div>
     <div class="join-msg">
-      <p><strong>Join Telegram Channel:</strong> 
-         <a href="https://t.me/YOUR_CHANNEL_LINK" target="_blank">@YourChannel</a>
-      </p>
-    </div>
-
-    <!-- Leaderboard -->
-    <div class="leaderboard-container">
-      <h2>Leaderboard</h2>
-      <div id="leaderboard"></div>
+      Join our Telegram Channel: <a href="https://t.me/YOUR_CHANNEL_LINK" target="_blank">Click Here</a>
     </div>
   </div>
 
-  <!-- Confetti Library -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-
-  <!-- Main JS -->
   <script src="script.js"></script>
 </body>
 </html>
