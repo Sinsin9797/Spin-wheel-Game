@@ -117,11 +117,13 @@ function logToGoogleSheets(result) {
 
 // ==== CONFETTI ====
 function launchConfetti() {
-  confetti({
-    particleCount: 100,
-    spread: 70,
-    origin: { y: 0.6 }
-  });
+  if (typeof confetti === "function") {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+  }
 }
 
 // ==== DARK MODE ====
@@ -141,7 +143,8 @@ function generateReferral() {
   if (!userName) return;
   const code = btoa(userName).substring(0, 10);
   referralCode = code;
-  document.getElementById("referralLink").value = `${window.location.href}?ref=${code}`;
+  const link = `${window.location.href.split('?')[0]}?ref=${code}`;
+  document.getElementById("referralLink").value = link;
 }
 
 // ==== COINS DISPLAY ====
@@ -151,7 +154,6 @@ function showCoins() {
 
 // ==== LEADERBOARD ====
 function updateLeaderboard() {
-  // Extend with Firebase or Google Sheets for global leaderboard
   document.getElementById("leaderboard").innerText = `${userName} - ${userCoins} coins`;
 }
 
