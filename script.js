@@ -4,6 +4,7 @@ const spinBtn = document.getElementById("spinBtn");
 const muteBtn = document.getElementById("muteBtn");
 const darkToggle = document.getElementById("darkModeToggle");
 const resultEl = document.getElementById("result");
+const usernameInput = document.getElementById("username");
 
 let segments = [];
 let angle = 0;
@@ -13,7 +14,10 @@ let muted = false;
 const spinSound = new Audio("sounds/spin.mp3");
 const winSound = new Audio("sounds/win.mp3");
 
-// Load rewards
+// Spin limit logic
+const spinLimit = 3;
+const userSpins = {};
+
 fetch("rewards.json")
   .then(res => res.json())
   .then(data => {
@@ -59,7 +63,17 @@ function drawWheel() {
 }
 
 function spinWheel() {
-  if (spinning || segments.length === 0) return;
+  const username = usernameInput.value.trim();
+  if (!username) return alert("Please enter your name.");
+  if (!segments.length || spinning) return;
+
+  const today = new Date().toLocaleDateString();
+  const userKey = `${username}_${today}`;
+
+  if (!userSpins[userKey]) userSpins[userKey] = 0;
+  if (userSpins[userKey] >= spinLimit) return alert("Spin limit reached for today!");
+
+  userSpins[userKey]++;
 
   if (!muted) {
     spinSound.currentTime = 0;
@@ -85,7 +99,7 @@ function spinWheel() {
         winSound.currentTime = 0;
         winSound.play();
       }
-      showResult();
+      showResult(username);
       triggerConfetti();
     }
   }
@@ -93,28 +107,28 @@ function spinWheel() {
   requestAnimationFrame(animate);
 }
 
-function showResult() {
+function showResult(username) {
   const normalizedAngle = angle % (2 * Math.PI);
   const segmentAngle = (2 * Math.PI) / segments.length;
   const index = Math.floor(((2 * Math.PI - normalizedAngle + segmentAngle / 2) % (2 * Math.PI)) / segmentAngle);
   const result = segments[index];
 
-  resultEl.innerText = `You won: ${result.label}`;
+  resultEl.innerText = `${username}, You won: ${result.label}`;
 
-  // Google Sheets Logging (Replace below with your actual webhook if needed)
-  fetch("https://example.com/your-google-sheet-webhook", {
+  // Google Sheets Logging
+  fetch("YOUR_GOOGLE_SHEET_WEBHOOK", {
     method: "POST",
-    body: JSON.stringify({ reward: result.label, time: new Date().toLocaleString() }),
+    body: JSON.stringify({ user: username, reward: result.label, time: new Date().toLocaleString() }),
     headers: { "Content-Type": "application/json" }
   });
 
-  // Telegram Alert (Bot Message)
-  fetch("https://api.telegram.org/bot7660325670:AAGjyxqcfafCpx-BiYNIRlPG4u5gd7NDxsI/sendMessage", {
+  // Telegram Webhook
+  fetch("https://api.telegram.org/botYOUR_TOKEN/sendMessage", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      chat_id: "5054074724",
-      text: `You won: ${result.label}`
+      chat_id: "YOUR_CHAT_ID",
+      text: `${username} won: ${result.label}`
     })
   });
 }
@@ -128,29 +142,17 @@ function triggerConfetti() {
   const end = Date.now() + duration;
 
   (function frame() {
-    confetti({
-      particleCount: 5,
-      angle: 60,
-      spread: 55,
-      origin: { x: 0 },
-    });
-    confetti({
-      particleCount: 5,
-      angle: 120,
-      spread: 55,
-      origin: { x: 1 },
-    });
+    confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 } });
+    confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 } });
     if (Date.now() < end) requestAnimationFrame(frame);
   })();
 }
 
 spinBtn.addEventListener("click", spinWheel);
-
 muteBtn.addEventListener("click", () => {
   muted = !muted;
   muteBtn.innerText = muted ? "Unmute" : "Mute";
 });
-
 darkToggle.addEventListener("click", () => {
   document.body.classList.toggle("dark-mode");
 });
