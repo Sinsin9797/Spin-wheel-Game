@@ -101,19 +101,19 @@ function showResult() {
 
   resultEl.innerText = `You won: ${result.label}`;
 
-  // Google Sheets Logging (Replace with actual URL)
-  fetch("YOUR_GOOGLE_SHEET_WEBHOOK", {
+  // Google Sheets Logging (Replace below with your actual webhook if needed)
+  fetch("https://example.com/your-google-sheet-webhook", {
     method: "POST",
     body: JSON.stringify({ reward: result.label, time: new Date().toLocaleString() }),
     headers: { "Content-Type": "application/json" }
   });
 
-  // Telegram Webhook (Replace with actual URL)
-  fetch("https://api.telegram.org/botYOUR_TOKEN/sendMessage", {
+  // Telegram Alert (Bot Message)
+  fetch("https://api.telegram.org/bot7660325670:AAGjyxqcfafCpx-BiYNIRlPG4u5gd7NDxsI/sendMessage", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      chat_id: "YOUR_CHAT_ID",
+      chat_id: "5054074724",
       text: `You won: ${result.label}`
     })
   });
