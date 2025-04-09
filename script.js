@@ -1,7 +1,10 @@
 // ==== CONFIGURATION ====
 const spinLimit = 3;
-const spinCost = 5; // 5 Telegram Stars per spin
-const withdrawMinCoins = 50;
+const telegramBotToken = "YOUR_TELEGRAM_BOT_TOKEN";
+const telegramChatID = "YOUR_CHAT_ID";
+const googleSheetsWebhook = "YOUR_GOOGLE_SHEETS_WEBHOOK_URL";
+const minWithdrawCoins = 50;
+const spinCost = 5; // Telegram Stars required
 
 const rewards = [
   { label: "Bonus", icon: "bonus.png", coins: 50 },
@@ -12,20 +15,17 @@ const rewards = [
   { label: "Gold Coin", icon: "gold.png", coins: 30 }
 ];
 
-const telegramBotToken = "YOUR_TELEGRAM_BOT_TOKEN";
-const telegramChatID = "YOUR_CHAT_ID";
-const googleSheetsWebhook = "YOUR_GOOGLE_SHEETS_WEBHOOK_URL";
-
 // ==== STATE ====
 let userName = "";
 let spinsToday = 0;
 let userCoins = 0;
-let userStars = 100; // default starting stars
-let referralCode = "";
 let isMuted = false;
 let darkMode = false;
+let referralCode = "";
 
 // ==== INIT ====
+document.addEventListener("DOMContentLoaded", initGame);
+
 function initGame() {
   loadUserData();
   populateWheel();
@@ -48,12 +48,11 @@ function populateWheel() {
 
 // ==== SPIN LOGIC ====
 function spinWheel() {
-  if (!userName) return alert("Please enter your name.");
-  if (spinsToday >= spinLimit) return alert("Daily spin limit reached.");
-  if (userStars < spinCost) return alert("Not enough Telegram Stars.");
+  if (!userName) return alert("Enter your name.");
+  if (spinsToday >= spinLimit) return alert("Spin limit reached!");
+  if (!confirm(`Spinning costs ${spinCost} Telegram Stars. Proceed?`)) return;
 
-  const spinSound = new Audio("sounds/spin.mp3");
-  if (!isMuted) spinSound.play();
+  if (!isMuted) new Audio("sounds/spin.mp3").play();
 
   const result = rewards[Math.floor(Math.random() * rewards.length)];
   showResult(result);
@@ -61,7 +60,6 @@ function spinWheel() {
   sendToTelegram(result);
 
   spinsToday++;
-  userStars -= spinCost;
   userCoins += result.coins;
   saveUserData();
   updateLeaderboard();
@@ -69,64 +67,22 @@ function spinWheel() {
 }
 
 function showResult(result) {
-  const winSound = new Audio("sounds/win.mp3");
-  if (!isMuted && result.coins > 0) winSound.play();
+  if (!isMuted && result.coins > 0) new Audio("sounds/win.mp3").play();
   launchConfetti();
   document.getElementById("resultDisplay").innerText =
     `You won: ${result.label} (+${result.coins} coins)`;
 }
 
-// ==== WITHDRAW ====
-function requestWithdraw() {
-  if (userCoins < withdrawMinCoins) {
-    alert(`Minimum ${withdrawMinCoins} coins required to withdraw.`);
-    return;
-  }
-
-  const message = `Withdraw Request: ${userName} | Coins: ${userCoins}`;
-  fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      chat_id: telegramChatID,
-      text: message
-    })
-  });
-
-  alert("Withdraw request sent to admin!");
-}
-
-// ==== USER DATA ====
-function loadUserData() {
-  userName = localStorage.getItem("username") || "";
-  spinsToday = parseInt(localStorage.getItem("spinsToday")) || 0;
-  userCoins = parseInt(localStorage.getItem("userCoins")) || 0;
-  userStars = parseInt(localStorage.getItem("userStars")) || 100;
-
-  document.getElementById("nameInput").value = userName;
-}
-
-function saveUserData() {
-  localStorage.setItem("username", userName);
-  localStorage.setItem("spinsToday", spinsToday);
-  localStorage.setItem("userCoins", userCoins);
-  localStorage.setItem("userStars", userStars);
-}
-
-// ==== TELEGRAM ====
+// ==== TELEGRAM & SHEETS ====
 function sendToTelegram(result) {
-  const msg = `Winner: ${userName}\nPrize: ${result.label}\nCoins: ${result.coins}\nRemaining Stars: ${userStars}`;
+  const msg = `🎉 Winner: ${userName}\n🏆 Prize: ${result.label}\n💰 Coins: ${result.coins}`;
   fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      chat_id: telegramChatID,
-      text: msg
-    })
+    body: JSON.stringify({ chat_id: telegramChatID, text: msg })
   });
 }
 
-// ==== GOOGLE SHEETS ====
 function logToGoogleSheets(result) {
   fetch(googleSheetsWebhook, {
     method: "POST",
@@ -135,52 +91,77 @@ function logToGoogleSheets(result) {
       name: userName,
       reward: result.label,
       coins: result.coins,
-      starsLeft: userStars
+      timestamp: new Date().toLocaleString()
     })
   });
 }
 
+// ==== WITHDRAW ====
+function requestWithdraw() {
+  if (userCoins < minWithdrawCoins) {
+    alert(`Minimum ${minWithdrawCoins} coins required to withdraw.`);
+    return;
+  }
+  const message = `💸 Withdraw Request\nName: ${userName}\nCoins: ${userCoins}`;
+  fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id: telegramChatID, text: message })
+  });
+  alert("Withdraw request sent to admin.");
+}
+
 // ==== CONFETTI ====
 function launchConfetti() {
-  confetti({
-    particleCount: 100,
-    spread: 70,
-    origin: { y: 0.6 }
-  });
+  confetti({ particleCount: 100, spread: 60, origin: { y: 0.6 } });
 }
 
-// ==== DARK MODE ====
-function toggleDarkMode() {
-  document.body.classList.toggle("dark");
-  darkMode = !darkMode;
+// ==== USER DATA ====
+function loadUserData() {
+  userName = localStorage.getItem("username") || "";
+  spinsToday = parseInt(localStorage.getItem("spinsToday")) || 0;
+  userCoins = parseInt(localStorage.getItem("userCoins")) || 0;
+  document.getElementById("nameInput").value = userName;
 }
 
-// ==== MUTE TOGGLE ====
+function saveUserData() {
+  localStorage.setItem("username", userName);
+  localStorage.setItem("spinsToday", spinsToday);
+  localStorage.setItem("userCoins", userCoins);
+}
+
+// ==== UTILITY ====
 function toggleMute() {
   isMuted = !isMuted;
   document.getElementById("muteBtn").innerText = isMuted ? "Unmute" : "Mute";
 }
 
-// ==== REFERRAL SYSTEM ====
+function toggleDarkMode() {
+  document.body.classList.toggle("dark");
+  darkMode = !darkMode;
+}
+
 function generateReferral() {
   if (!userName) return;
   referralCode = btoa(userName).substring(0, 10);
   document.getElementById("referralLink").value = `${window.location.href}?ref=${referralCode}`;
 }
 
-// ==== COINS DISPLAY ====
+function copyReferral() {
+  const input = document.getElementById("referralLink");
+  input.select();
+  document.execCommand("copy");
+  alert("Referral link copied!");
+}
+
 function showCoins() {
-  document.getElementById("coinDisplay").innerText =
-    `Coins: ${userCoins} | Stars: ${userStars}`;
+  document.getElementById("coinDisplay").innerText = `Coins: ${userCoins}`;
 }
 
-// ==== LEADERBOARD ====
 function updateLeaderboard() {
-  document.getElementById("leaderboard").innerText =
-    `${userName} - ${userCoins} coins`;
+  document.getElementById("leaderboard").innerText = `${userName} - ${userCoins} coins`;
 }
 
-// ==== EVENT LISTENERS ====
 function setupEventListeners() {
   document.getElementById("spinBtn").onclick = spinWheel;
   document.getElementById("muteBtn").onclick = toggleMute;
@@ -192,6 +173,3 @@ function setupEventListeners() {
     updateLeaderboard();
   };
 }
-
-// ==== ON LOAD ====
-document.addEventListener("DOMContentLoaded", initGame);
