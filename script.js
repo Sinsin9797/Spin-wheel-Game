@@ -1,5 +1,8 @@
 // ==== CONFIGURATION ====
-const spinLimit = 3; // spins per user/day
+const spinLimit = 3;
+const spinCost = 5; // 5 Telegram Stars per spin
+const withdrawMinCoins = 50;
+
 const rewards = [
   { label: "Bonus", icon: "bonus.png", coins: 50 },
   { label: "Try Again", icon: "tryagain.png", coins: 0 },
@@ -17,6 +20,7 @@ const googleSheetsWebhook = "YOUR_GOOGLE_SHEETS_WEBHOOK_URL";
 let userName = "";
 let spinsToday = 0;
 let userCoins = 0;
+let userStars = 100; // default starting stars
 let referralCode = "";
 let isMuted = false;
 let darkMode = false;
@@ -45,7 +49,8 @@ function populateWheel() {
 // ==== SPIN LOGIC ====
 function spinWheel() {
   if (!userName) return alert("Please enter your name.");
-  if (spinsToday >= spinLimit) return alert("Spin limit reached for today.");
+  if (spinsToday >= spinLimit) return alert("Daily spin limit reached.");
+  if (userStars < spinCost) return alert("Not enough Telegram Stars.");
 
   const spinSound = new Audio("sounds/spin.mp3");
   if (!isMuted) spinSound.play();
@@ -56,6 +61,7 @@ function spinWheel() {
   sendToTelegram(result);
 
   spinsToday++;
+  userStars -= spinCost;
   userCoins += result.coins;
   saveUserData();
   updateLeaderboard();
@@ -70,15 +76,32 @@ function showResult(result) {
     `You won: ${result.label} (+${result.coins} coins)`;
 }
 
+// ==== WITHDRAW ====
+function requestWithdraw() {
+  if (userCoins < withdrawMinCoins) {
+    alert(`Minimum ${withdrawMinCoins} coins required to withdraw.`);
+    return;
+  }
+
+  const message = `Withdraw Request: ${userName} | Coins: ${userCoins}`;
+  fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: telegramChatID,
+      text: message
+    })
+  });
+
+  alert("Withdraw request sent to admin!");
+}
+
 // ==== USER DATA ====
 function loadUserData() {
-  const storedName = localStorage.getItem("username");
-  const storedSpins = localStorage.getItem("spinsToday");
-  const storedCoins = localStorage.getItem("userCoins");
-
-  if (storedName) userName = storedName;
-  if (storedSpins) spinsToday = parseInt(storedSpins);
-  if (storedCoins) userCoins = parseInt(storedCoins);
+  userName = localStorage.getItem("username") || "";
+  spinsToday = parseInt(localStorage.getItem("spinsToday")) || 0;
+  userCoins = parseInt(localStorage.getItem("userCoins")) || 0;
+  userStars = parseInt(localStorage.getItem("userStars")) || 100;
 
   document.getElementById("nameInput").value = userName;
 }
@@ -87,17 +110,18 @@ function saveUserData() {
   localStorage.setItem("username", userName);
   localStorage.setItem("spinsToday", spinsToday);
   localStorage.setItem("userCoins", userCoins);
+  localStorage.setItem("userStars", userStars);
 }
 
 // ==== TELEGRAM ====
 function sendToTelegram(result) {
-  const message = `Winner: ${userName} | Prize: ${result.label} | Coins: ${result.coins}`;
+  const msg = `Winner: ${userName}\nPrize: ${result.label}\nCoins: ${result.coins}\nRemaining Stars: ${userStars}`;
   fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       chat_id: telegramChatID,
-      text: message
+      text: msg
     })
   });
 }
@@ -110,20 +134,19 @@ function logToGoogleSheets(result) {
     body: JSON.stringify({
       name: userName,
       reward: result.label,
-      coins: result.coins
+      coins: result.coins,
+      starsLeft: userStars
     })
   });
 }
 
 // ==== CONFETTI ====
 function launchConfetti() {
-  if (typeof confetti === "function") {
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
-  }
+  confetti({
+    particleCount: 100,
+    spread: 70,
+    origin: { y: 0.6 }
+  });
 }
 
 // ==== DARK MODE ====
@@ -141,20 +164,20 @@ function toggleMute() {
 // ==== REFERRAL SYSTEM ====
 function generateReferral() {
   if (!userName) return;
-  const code = btoa(userName).substring(0, 10);
-  referralCode = code;
-  const link = `${window.location.href.split('?')[0]}?ref=${code}`;
-  document.getElementById("referralLink").value = link;
+  referralCode = btoa(userName).substring(0, 10);
+  document.getElementById("referralLink").value = `${window.location.href}?ref=${referralCode}`;
 }
 
 // ==== COINS DISPLAY ====
 function showCoins() {
-  document.getElementById("coinDisplay").innerText = `Coins: ${userCoins}`;
+  document.getElementById("coinDisplay").innerText =
+    `Coins: ${userCoins} | Stars: ${userStars}`;
 }
 
 // ==== LEADERBOARD ====
 function updateLeaderboard() {
-  document.getElementById("leaderboard").innerText = `${userName} - ${userCoins} coins`;
+  document.getElementById("leaderboard").innerText =
+    `${userName} - ${userCoins} coins`;
 }
 
 // ==== EVENT LISTENERS ====
