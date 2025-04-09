@@ -103,19 +103,27 @@ function showResult() {
   const result = segments[index];
   document.getElementById("result").innerText = `You won: ${result.label}`;
 
-  // Google Sheets logging
+  // Google Sheets logging (replace if needed)
   fetch("YOUR_GOOGLE_SHEET_WEBHOOK", {
     method: "POST",
     body: JSON.stringify({ reward: result.label, time: new Date().toLocaleString() }),
     headers: { "Content-Type": "application/json" }
   });
 
-  // Telegram alert
-  fetch("YOUR_TELEGRAM_BOT_WEBHOOK", {
+  // Telegram alert (final working code)
+  fetch("https://api.telegram.org/bot7660325670:AAGjyxqcfafCpx-BiYNIRlPG4u5gd7NDxsI/sendMessage", {
     method: "POST",
-    body: JSON.stringify({ text: `You won: ${result.label}` }),
-    headers: { "Content-Type": "application/json" }
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      chat_id: "5054074724",
+      text: `You won: ${result.label}`
+    }),
+    mode: "no-cors"
   });
+
+  console.log("Telegram message sent!");
 }
 
 function easeOutCubic(t) {
@@ -132,27 +140,3 @@ function triggerConfetti() {
       angle: 60,
       spread: 55,
       origin: { x: 0 },
-    });
-    confetti({
-      particleCount: 5,
-      angle: 120,
-      spread: 55,
-      origin: { x: 1 },
-    });
-
-    if (Date.now() < end) {
-      requestAnimationFrame(frame);
-    }
-  })();
-}
-
-muteBtn.addEventListener("click", () => {
-  muted = !muted;
-  muteBtn.innerText = muted ? "Unmute" : "Mute";
-});
-
-darkToggle.addEventListener("click", () => {
-  document.body.classList.toggle("dark-mode");
-});
-
-spinBtn.addEventListener("click", spinWheel);
