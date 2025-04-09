@@ -1,73 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Spin & Win</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 20px;
-      transition: background 0.3s, color 0.3s;
-    }
-    body.dark-mode {
-      background: #111;
-      color: #fff;
-    }
-    #wheel {
-      border: 5px solid #333;
-      border-radius: 50%;
-      margin: 20px auto;
-    }
-    #controls button {
-      margin: 10px;
-      padding: 10px 20px;
-      font-size: 16px;
-    }
-    #customAd {
-      display: none;
-      margin-top: 20px;
-      background: #fff3cd;
-      color: #856404;
-      border: 1px solid #ffeeba;
-      padding: 10px;
-      width: fit-content;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    input#username {
-      padding: 10px;
-      font-size: 16px;
-      margin: 10px auto;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
+  <!-- Telegram Join Banner -->
+  <div id="telegramBanner">Join our Telegram for more rewards!</div>
+
   <h1>Spin & Win</h1>
 
+  <!-- Username Input -->
   <div id="usernameInput">
     <input type="text" id="username" placeholder="Enter your name" />
   </div>
 
+  <!-- Wheel -->
   <canvas id="wheel" width="300" height="300"></canvas>
 
+  <!-- Controls -->
   <div id="controls">
     <button id="spinBtn">SPIN</button>
     <button id="muteBtn">Mute</button>
     <button id="darkModeToggle">Toggle Dark Mode</button>
   </div>
 
+  <!-- Result -->
   <h2 id="result"></h2>
 
-  <div id="customAd">
-    <strong>Ad:</strong> Join our Telegram for special rewards! 
-    <a href="https://t.me/YOUR_CHANNEL" target="_blank">Click Here</a>
-  </div>
-
+  <!-- Confetti & Script -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
   <script src="script.js"></script>
-
 </body>
 </html>
