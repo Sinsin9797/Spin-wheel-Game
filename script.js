@@ -116,7 +116,7 @@ function showResult(username) {
 
   resultEl.innerText = `${username}, You won: ${result.label}`;
 
-  // Google Sheets Logging (optional - replace with your real link if needed)
+  // Google Sheets Logging
   fetch("https://script.google.com/macros/s/YOUR_GOOGLE_SCRIPT_ID/exec", {
     method: "POST",
     body: JSON.stringify({ user: username, reward: result.label, time: new Date().toLocaleString() }),
@@ -149,14 +149,17 @@ function triggerConfetti() {
   })();
 }
 
-// Ad Popup logic
+// Show permanent ad popup
 function showAd() {
   const adBox = document.getElementById("customAd");
   adBox.style.display = "block";
-  setTimeout(() => {
-    adBox.style.display = "none";
-  }, 5000);
 }
+
+// Show ad on load also (permanent)
+window.addEventListener("load", () => {
+  const adBox = document.getElementById("customAd");
+  adBox.style.display = "block";
+});
 
 spinBtn.addEventListener("click", spinWheel);
 muteBtn.addEventListener("click", () => {
