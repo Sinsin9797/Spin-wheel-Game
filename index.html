@@ -4,31 +4,37 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Spin & Win Game</title>
-  <link rel="stylesheet" href="style.css"/>
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
     <h1>Spin & Win</h1>
-    <input type="text" id="nameInput" placeholder="Enter your name" />
-    <div id="coinDisplay">Coins: 0</div>
-    <button id="spinBtn">Spin</button>
-    <div id="resultDisplay"></div>
-    <div id="wheel" class="wheel"></div>
-    <div class="controls">
-      <button id="muteBtn">Mute</button>
-      <button id="darkBtn">Dark Mode</button>
-    </div>
-    <div class="referral">
-      <label>Referral Link:</label>
-      <input type="text" id="referralLink" readonly />
-    </div>
-    <div id="leaderboard" class="leaderboard">Leaderboard loading...</div>
-    <div class="join-msg">
-      Join our Telegram Channel: <a href="https://t.me/YOUR_CHANNEL_LINK" target="_blank">Click Here</a>
-    </div>
-  </div>
 
-  <script src="script.js"></script>
+    <div class="input-group">
+      <input type="text" id="nameInput" placeholder="Enter Your Name" />
+      <button id="darkBtn">Dark Mode</button>
+      <button id="muteBtn">Mute</button>
+    </div>
+
+    <div id="wheelContainer">
+      <div id="wheel"></div>
+      <button id="spinBtn">SPIN</button>
+    </div>
+
+    <div id="resultDisplay"></div>
+    <div id="coinDisplay">Coins: 0</div>
+    <div id="leaderboard">Leaderboard</div>
+
+    <input type="text" id="referralLink" readonly />
+    <button onclick="copyReferral()">Copy Referral Link</button>
+
+    <div class="telegram-info">
+      <p>Join our Telegram for Stars & Withdraws</p>
+      <a href="https://t.me/YOUR_TELEGRAM_CHANNEL" target="_blank">@YOUR_CHANNEL</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="script.js"></script>
+  </div>
 </body>
 </html>
