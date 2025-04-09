@@ -101,6 +101,7 @@ function spinWheel() {
       }
       showResult(username);
       triggerConfetti();
+      showAd(); // Show Ad after result
     }
   }
 
@@ -115,20 +116,20 @@ function showResult(username) {
 
   resultEl.innerText = `${username}, You won: ${result.label}`;
 
-  // Google Sheets Logging
-  fetch("YOUR_GOOGLE_SHEET_WEBHOOK", {
+  // Google Sheets Logging (optional - replace with your real link if needed)
+  fetch("https://script.google.com/macros/s/YOUR_GOOGLE_SCRIPT_ID/exec", {
     method: "POST",
     body: JSON.stringify({ user: username, reward: result.label, time: new Date().toLocaleString() }),
     headers: { "Content-Type": "application/json" }
   });
 
   // Telegram Webhook
-  fetch("https://api.telegram.org/botYOUR_TOKEN/sendMessage", {
+  fetch("https://api.telegram.org/bot7660325670:AAGjyxqcfafCpx-BiYNIRlPG4u5gd7NDxsI/sendMessage", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      chat_id: "YOUR_CHAT_ID",
-      text: `${username} won: ${result.label}`
+      chat_id: "5054074724",
+      text: `User: ${username}\nWon: ${result.label}`
     })
   });
 }
@@ -146,6 +147,15 @@ function triggerConfetti() {
     confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 } });
     if (Date.now() < end) requestAnimationFrame(frame);
   })();
+}
+
+// Ad Popup logic
+function showAd() {
+  const adBox = document.getElementById("customAd");
+  adBox.style.display = "block";
+  setTimeout(() => {
+    adBox.style.display = "none";
+  }, 5000);
 }
 
 spinBtn.addEventListener("click", spinWheel);
